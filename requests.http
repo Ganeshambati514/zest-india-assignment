@@ -1,0 +1,42 @@
+@baseUrl = https://localhost:7163
+
+### Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin@123"
+}
+
+### Get all students (paste token below after login)
+GET {{baseUrl}}/api/students
+Authorization: Bearer {{token}}
+
+### Create student
+POST {{baseUrl}}/api/students
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Jane Doe",
+  "email": "jane.doe@example.com",
+  "age": 21,
+  "course": "Computer Science"
+}
+
+### Update student
+PUT {{baseUrl}}/api/students/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Jane Smith",
+  "email": "jane.smith@example.com",
+  "age": 22,
+  "course": "Data Science"
+}
+
+### Delete student
+DELETE {{baseUrl}}/api/students/1
+Authorization: Bearer {{token}}

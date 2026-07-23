@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sms-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Your_password123"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sms_sql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"Your_password123\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sms-api
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=StudentManagementDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True;"
+      Jwt__Key: "THIS_IS_A_SAMPLE_DEV_ONLY_SECRET_KEY_REPLACE_ME_32CHARS+"
+      Jwt__Issuer: "StudentManagementSystem"
+      Jwt__Audience: "StudentManagementSystemUsers"
+      Jwt__ExpiryMinutes: "60"
+      AdminCredentials__Username: "admin"
+      AdminCredentials__Password: "Admin@123"
+    ports:
+      - "8080:8080"
+
+volumes:
+  sms_sql_data:
